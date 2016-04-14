@@ -5,14 +5,45 @@ const electron = require('electron');
 const app = electron.app;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
+// Modules to create menus and trays.
+const Menu = electron.Menu;
+const Tray = electron.Tray;
+
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
+let appIcon;
+
 function createWindow () {
+
+  appIcon = new Tray('src/client/images/icon.png');
+  var contextMenu = Menu.buildFromTemplate([
+    { label: 'Item1', type: 'radio' },
+    { label: 'Item2', type: 'radio' },
+    { label: 'Item3', type: 'radio', checked: true },
+    { label: 'Item4', type: 'radio' }
+  ]);
+  appIcon.setToolTip('Welcome to the Future - Eth0s');
+  appIcon.setContextMenu(contextMenu);
+
+
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600});
+  mainWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    show: true,
+    preload: __dirname + '/src/client/js/inject.js'
+  });
+  appIcon.on('click', function(){
+    if (mainWindow.isVisible()){
+      mainWindow.hide();
+    } else {
+      mainWindow.show();
+      mainWindow.focus();
+    }
+  });
 
   // and load the index.html of the app.
   mainWindow.loadURL('file://' + __dirname + '/index.html');

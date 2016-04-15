@@ -9,12 +9,14 @@ const BrowserWindow = electron.BrowserWindow;
 const Menu = electron.Menu;
 const Tray = electron.Tray;
 
+const http = require('http');
+
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
-
 let appIcon;
+let server;
 
 function createWindow () {
 
@@ -31,11 +33,16 @@ function createWindow () {
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 370,
+    height: 528,
+    'min-width': 370,
+    'min-height': 528,
+    frame: false,
+    closable: false,
     show: true,
     preload: __dirname + '/src/client/js/inject.js'
   });
+
   appIcon.on('click', function(){
     if (mainWindow.isVisible()){
       mainWindow.hide();
@@ -58,6 +65,17 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+
+
+  server = http.createServer(function(req, res) {
+    // You can respond with a status `500` if you want to indicate that something went wrong 
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    // data passed to `electronWorkers.execute` will be available in req body 
+    // req.pipe(res);
+    res.end("ok")
+  });
+ 
+  server.listen(8545, 'localhost');
 }
 
 // This method will be called when Electron has finished

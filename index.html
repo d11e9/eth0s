@@ -4,12 +4,34 @@
     <meta charset="UTF-8">
     <title>Eth0s</title>
     <link rel="icon" href="src/client/images/icon.png">
+    <link rel="stylesheet" type="text/css" href="src/client/css/style.css">
   </head>
   <body>
+    <img class="logo" src="src/client/images/icon.png">
     <h1>Eth0s</h1>
+
+    <div class="block">
+      #<span class="value" title="Most recent block number"></span>
+    </div>
     We are using node <script>document.write(process.versions.node)</script>, <br/>
     Ethereum ZeroClient-7.3.0, <br/>
     Chromium <script>document.write(process.versions.chrome)</script>, <br/>
     and Electron <script>document.write(process.versions.electron)</script>.
+
+    <ul class="networks">
+      <li class="ethereum">Ethereum Network <span class="status led-green"></span></li>
+      <li class="ipfs">IPFS Network <span class="status led-red"></span></li>
+    </ul>
+
+    <script type="text/javascript">
+      function updateLatestBlock(){
+        web3.eth.getBlock("latest", function(err,block) {
+          document.querySelector('.block .value').innerHTML = block.number;
+          setTimeout( updateLatestBlock, 5 * 1000 );
+        });
+      }
+
+      updateLatestBlock();
+    </script>
   </body>
 </html>

@@ -1,7 +1,3 @@
-
-
-debugger
-
 var ZeroClientProvider = require('./ZeroClientProvider.js');
 var Web3 = require('../../../node_modules/web3');
 

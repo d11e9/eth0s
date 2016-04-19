@@ -1,0 +1,89 @@
+html, body  {
+	margin: 0;
+	padding: 0;
+	height: 100vh;
+	overflow: auto;
+}
+body {
+	font-family: monospace;
+	text-align: center;
+	background-color: white;
+	background: linear-gradient(to bottom, #66a0ff 0%,#f7f7f7 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	box-sizing: border-box;
+}
+
+.logo {
+	cursor: -webkit-grab;
+	-webkit-app-region: drag;
+	min-height: em;
+	max-height: 30vh;
+	max-width: 100%;
+	margin-top: 2em;
+}
+
+.block {
+	padding: 1em;
+	font-size: 1.52em;
+}
+
+
+.networks {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+	background-color: white;
+	background-color: #222;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+.networks li {
+	padding: 0;
+	padding: 0.5em;
+	line-height: 1em;
+	border-top: 1px solid #555375;
+	color: white;
+}
+
+.networks .status {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.led-red {
+    margin: 20px auto;
+    width: 12px;
+    height: 12px;
+    background-color: #940;
+    border-radius: 50%;
+    box-shadow: #000 0 -1px 7px 1px, inset #600 0 -1px 9px, #F00 0 2px 12px;
+}
+
+.led-yellow {
+    margin: 20px auto;
+    width: 12px;
+    height: 12px;
+    background-color: #A90;
+    border-radius: 50%;
+    box-shadow: #000 0 -1px 7px 1px, inset #660 0 -1px 9px, #DD0 0 2px 12px;
+}
+
+.led-green {
+    margin: 20px auto;
+    width: 12px;
+    height: 12px;
+    background-color: #690;
+    border-radius: 50%;
+    box-shadow: #000 0 -1px 7px 1px, inset #460 0 -1px 9px, #7D0 0 2px 12px;
+}
+
+.led-blue {
+    margin: 20px auto;
+    width: 12px;
+    height: 12px;
+    background-color: #4AB;
+    border-radius: 50%;
+    box-shadow: #000 0 -1px 7px 1px, inset #006 0 -1px 9px, #06F 0 2px 14px;
+}

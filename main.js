@@ -37,8 +37,8 @@ function createWindow () {
     height: 528,
     'min-width': 370,
     'min-height': 528,
-    frame: false,
-    closable: false,
+    frame: true,
+    closable: true,
     show: true,
     preload: __dirname + '/src/client/js/inject.js'
   });

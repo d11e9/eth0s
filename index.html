@@ -2,36 +2,86 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Eth0s</title>
+    <title>Eth&Oslash;s</title>
     <link rel="icon" href="src/client/images/icon.png">
     <link rel="stylesheet" type="text/css" href="src/client/css/style.css">
+    <link rel="stylesheet" type="text/css" href="src/client/css/font-awesome.min.css">
+    <script type="text/javascript" src="src/client/js/web3.js"></script>
+    <script type="text/javascript" src="src/client/js/ipfs.js"></script>
+  
   </head>
   <body>
+
+    <nav>
+      <div class="left source" title="View Source at github.com"><i class="fa fa-code"></i><span>Source</span></div>
+      <div class="right info" title="View more information"><i class="fa fa-info-circle"></i><span>Info</span></div>
+    </nav>
+    
     <img class="logo" src="src/client/images/icon.png">
-    <h1>Eth0s</h1>
+    <h1>Eth&Oslash;s</h1>
 
     <div class="block">
       #<span class="value" title="Most recent block number"></span>
     </div>
-    We are using node <script>document.write(process.versions.node)</script>, <br/>
-    Ethereum ZeroClient-7.3.0, <br/>
-    Chromium <script>document.write(process.versions.chrome)</script>, <br/>
-    and Electron <script>document.write(process.versions.electron)</script>.
 
-    <ul class="networks">
-      <li class="ethereum">Ethereum Network <span class="status led-green"></span></li>
-      <li class="ipfs">IPFS Network <span class="status led-red"></span></li>
-    </ul>
+    <div class="about">
+      <div class="tab current">
+        An Ethereum Zero Client, connecting you to the network without the need to store the blockchain locally. Click for more.
+      </div>
+      <div class="tab">
+        IPFS v<span class="ipfsVersion"></span><br/>
+        We are using Node v<span class="nodeVersion"></span><br/>
+        Ethereum ZeroClient-7.3.0<br/>
+        Chromium v<span class="chromiumVersion"></span><br/>
+        and Electron v<span class="electronVersion"></span>
+      </div>
+    </div>
+
+
 
     <script type="text/javascript">
-      function updateLatestBlock(){
-        web3.eth.getBlock("latest", function(err,block) {
-          document.querySelector('.block .value').innerHTML = block.number;
-          setTimeout( updateLatestBlock, 5 * 1000 );
-        });
-      }
 
-      updateLatestBlock();
+    var $ = require('jquery')
+    var shell = require('electron').shell
+    var web3 = new Web3( new Web3.providers.HttpProvider() )
+    
+
+    $(function(){
+        var $currentBlock = $('.block .value')
+        var $tabs = $('.tab')
+
+        $('.nodeVersion').html( process.versions.node )
+        $('.chromiumVersion').html( process.versions.chrome )
+        $('.electronVersion').html( process.versions.electron )
+
+
+        $('.info').on( 'click', function(){
+          $tabs.toggleClass('current')
+        })
+
+        $('.source').on('click', function(){
+          shell.openExternal('https://github.com/d11e9/eth0s')
+        })
+
+        function updateLatestBlock(){
+          web3.eth.getBlock("latest", function(err,block) {
+            if (err) 
+              console.error( err )
+            else {
+              $currentBlock.html( block.number )
+            }
+            setTimeout( updateLatestBlock, 1000 )
+          })
+        }
+
+        updateLatestBlock()
+        ipfs.setProvider(require('ipfs-api')('localhost', '5001'))
+        ipfs.api.version(function(err, resp){
+          if (!err) $('.ipfsVersion').html( resp.Version )
+        })
+
+      })
+      
     </script>
   </body>
 </html>

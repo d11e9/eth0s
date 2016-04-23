@@ -1,10 +1,12 @@
 {
-  "name": "electron-quick-start",
+  "name": "eth0s",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "An Ethereum Zero Client",
   "main": "main.js",
   "scripts": {
-    "start": "electron main.js"
+    "start": "electron main.js",
+    "package-osx": "electron-packager ./ Eth0s --platform=darwin --arch=x64 --out ./dist --overwrite --icon=src/client/images/icon.icns",
+    "package": "electron-packager ./ Eth0s --all --out ./dist --overwrite --icon=src/client/images/icon.icns"
   },
   "repository": {
     "type": "git",
@@ -19,13 +21,17 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "bugs": {
-    "url": "https://github.com/electron/electron-quick-start/issues"
+    "url": "https://github.com/d11e9/eth0s/issues"
   },
-  "homepage": "https://github.com/electron/electron-quick-start#readme",
+  "homepage": "https://github.com/d11e9/eth0s#readme",
   "devDependencies": {
+    "electron-packager": "^7.0.1",
     "electron-prebuilt": "^0.37.0"
   },
   "dependencies": {
-    "web3": "^0.15.3"
+    "ipfs-js": "0.0.9",
+    "jquery": "^2.2.3",
+    "querystring": "^0.2.0",
+    "request": "^2.72.0"
   }
 }

@@ -8,8 +8,12 @@ const BrowserWindow = electron.BrowserWindow;
 // Modules to create menus and trays.
 const Menu = electron.Menu;
 const Tray = electron.Tray;
+const dialog = electron.dialog
 
+const request = require('request')
 const http = require('http');
+const platform = require('os').platform();  
+const fs = require('fs')
 
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -17,30 +21,29 @@ const http = require('http');
 let mainWindow;
 let appIcon;
 let server;
+let ethServer;
+let ipfsServer;
 
 function createWindow () {
 
-  appIcon = new Tray('src/client/images/icon.png');
-  var contextMenu = Menu.buildFromTemplate([
-    { label: 'Item1', type: 'radio' },
-    { label: 'Item2', type: 'radio' },
-    { label: 'Item3', type: 'radio', checked: true },
-    { label: 'Item4', type: 'radio' }
-  ]);
-  appIcon.setToolTip('Welcome to the Future - Eth0s');
-  appIcon.setContextMenu(contextMenu);
-
+  if (mainWindow) {
+    mainWindow.show();
+    mainWindow.focus();
+    return;
+  }
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 370,
-    height: 528,
-    'min-width': 370,
-    'min-height': 528,
+    width: 350,
+    height: 450,
+    minWidth: 350,
+    minHeight: 450,
     frame: true,
     closable: true,
     show: true,
-    preload: __dirname + '/src/client/js/inject.js'
+    webPrefernces: {
+      preload: __dirname + '/src/client/js/inject.js'
+    }
   });
 
   appIcon.on('click', function(){
@@ -55,9 +58,6 @@ function createWindow () {
   // and load the index.html of the app.
   mainWindow.loadURL('file://' + __dirname + '/index.html');
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
-
   // Emitted when the window is closed.
   mainWindow.on('closed', function() {
     // Dereference the window object, usually you would store windows
@@ -65,22 +65,96 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+}
 
 
-  server = http.createServer(function(req, res) {
-    // You can respond with a status `500` if you want to indicate that something went wrong 
-    res.writeHead(200, {'Content-Type': 'application/json'});
-    // data passed to `electronWorkers.execute` will be available in req body 
-    // req.pipe(res);
-    res.end("ok")
+function createEthRPCProxy(){
+  var whitelist = ["eth_getBlockByNumber"]
+
+  ethServer = http.createServer(function(req, res) {   
+
+    if (req.method == 'POST') {
+        var body = '';
+        req.on('data', function (data) { body += data; });
+        req.on('end', function () {
+            var data = JSON.parse(body);
+            request.post( 'https://eth.turkd.net', { body: body } ).pipe(res);
+        });
+    } else {
+      res.writeHead(500, {'Content-Type': 'application/json'});
+      res.end("Not Implemented");
+    }
+
   });
  
-  server.listen(8545, 'localhost');
+  ethServer.listen(8545, 'localhost');
 }
+
+function createIpfsRPCProxy(){
+  ipfsServer = http.createServer(function(req, res) {   
+
+    if (req.method == 'POST') {
+        var body = '';
+        req.on('data', function (data) { body += data; });
+        req.on('end', function () {
+            request.post( 'https://ifps.turkd.net', { body: body } ).pipe(res);
+        });
+    } else if (req.method == 'GET') {
+      request.get('https://ipfs.turkd.net' + req.url).pipe(res )
+    } else {
+      res.writeHead(500, {'Content-Type': 'text/plain'});
+      res.end("Not yet implemented");
+    }
+
+  });
+ 
+  ipfsServer.listen(5001, 'localhost');
+}
+
+
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
-app.on('ready', createWindow);
+app.on('ready', function(){
+  if (platform === 'darwin') {
+    appIcon = new Tray(__dirname + '/src/client/images/iconTemplate@2x.png');
+  } else {
+    appIcon = new Tray(__dirname + '/src/client/images/icon.png');
+  }
+  var contextMenu = Menu.buildFromTemplate([
+    { label: 'About',
+      click: createWindow },
+    { label: 'Debug',
+      click: function(){
+        // Open the DevTools.
+        createWindow()
+        mainWindow.toggleDevTools();
+      }},
+    { label: 'Quit',
+      accelerator: 'Command+Q',
+      click: app.quit }
+  ]);
+  appIcon.setToolTip('Welcome to the Future - Eth0s');
+  appIcon.setContextMenu(contextMenu);
+
+  createEthRPCProxy();
+  createIpfsRPCProxy();
+
+  server = http.createServer(function(req, res) {
+    console.log( req.url )
+    if (req.url === '/') fs.createReadStream(__dirname + '/index.html' ).pipe( res )
+    else if (req.url.indexOf('/src') === 0 || req.url.indexOf('/node_modules') === 0) fs.createReadStream(__dirname + req.url ).pipe( res )
+    else {
+      res.writeHead(400, {'Content-Type': 'application/json'});
+      res.end("Bad Request");
+    }
+  })
+
+  server.listen( 8989, 'localhost' )
+  createWindow();
+
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {

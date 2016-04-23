@@ -2,6 +2,8 @@
 
 An Ethereum Zero Client, connecting you to the network without the need to store the blockchain locally.
 
+![screenshot-osx](./src/client/images/screenshot.png)
+
 Releases
 --------
 

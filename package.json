@@ -6,6 +6,7 @@
   "scripts": {
     "start": "electron main.js",
     "package-osx": "electron-packager ./ Eth0s --platform=darwin --arch=x64 --out ./dist --overwrite --icon=src/client/images/icon.icns",
+    "package-win": "electron-packager ./ Eth0s --platform=win32 --arch=x64 --out ./dist --overwrite --icon=src/client/images/icon.icns",
     "package": "electron-packager ./ Eth0s --all --out ./dist --overwrite --icon=src/client/images/icon.icns"
   },
   "repository": {

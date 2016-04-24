@@ -13,7 +13,7 @@
   <body>
 
     <nav>
-      <div class="home" data-target="home" title="Home"><i class="fa fa-home"></i><span>Home</span></div>
+      <div class="home" data-target="home" title="About"><i class="fa fa-home"></i><span>About</span></div>
       <div class="info" data-target="info" title="View more information"><i class="fa fa-info-circle"></i><span>Info</span></div>
       <div class="network" data-target="network" title="View Network"><i class="fa fa-plug"></i><span>Network</span></div>
     </nav>
@@ -31,7 +31,7 @@
 
 	<div class="about">
 	  <p>An Ethereum Zero Client, connecting you to the network without the need to store the blockchain locally.</p>
-	  <p>Open source on <a class="source" href="http://github.com/d11e9/eth0s"><i class="fa fa-code-fork"></i> GitHub</a></p>
+	  <p>Open source on <a class="source" href="http://github.com/d11e9/eth0s" title="Eth0s on GitHub"><i class="fa fa-code-fork"></i> GitHub</a></p>
 	</div>
       </div>
 
@@ -52,15 +52,13 @@
 
       <div class="card network">
 	<a class="logo" href="#">
-	  <img src="src/client/images/icon.png">
 	  <h1>Eth&Oslash;s</h1>
 	</a>
 
 	<div class="about">
-	  <ul>
-	    <li>IPFS network provider: </li>
-	    <li>Ethereum node provider: </li>
-	  </ul>
+	  <p>IPFS Gateway: <span class="ipfsGatewayHost"></span></p>
+	  <p>IPFS API: <span class="ipfsAPIHost"></span></p>
+	  <p>Ethereum: <span class="ethRPCHost"></span></p>
 	</div>
       </div>
     </div>
@@ -72,6 +70,9 @@
     var $ = require('jquery')
     var shell = require('electron').shell
     var web3 = new Web3( new Web3.providers.HttpProvider() )
+
+    ipfs.setProvider(require('ipfs-api')('localhost', '5001'))
+
     
 
     $(function(){
@@ -90,12 +91,8 @@
 	  if ($prv.hasClass(cls)) return;
 
 	  $cards.removeClass('current')
-	  $prv.addClass('out')
-
 	  $('.card.' + cls).addClass('current')
-	  setTimeout(function(){
-	    $prv.removeClass('out')
-	  }, 1000)
+
 	})
 
 	$('a.logo').on( 'click', function(ev){
@@ -120,11 +117,23 @@
           })
         }
 
-        updateLatestBlock()
-        ipfs.setProvider(require('ipfs-api')('localhost', '5001'))
+	function updateNetwork () {
+	  $.getJSON('http://localhost:8989', function(config, status, xhr){
+	    console.log( config )
+	    if (status === 'success') {
+	      $('.ethRPCHost').html(config.active.eth)
+	      $('.ipfsAPIHost').html(config.active.ipfs.api)
+	      $('.ipfsGatewayHost').html(config.active.ipfs.gateway)
+	    }
+	  })
+	}
+
         ipfs.api.version(function(err, resp){
           if (!err) $('.ipfsVersion').html( resp.Version )
         })
+
+	updateLatestBlock()
+	updateNetwork()
 
       })
       

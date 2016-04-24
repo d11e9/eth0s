@@ -24,6 +24,27 @@ let server;
 let ethServer;
 let ipfsAPIServer;
 let ipfsServer;
+let config;
+
+
+
+config = {
+  active: {
+    eth: null,
+    ipfs: {
+      api: null,
+      gateway: null
+    }
+  },
+  eth: [
+    'https://eth.turkd.net',
+    'https://testrpc.metamask.io'
+  ],
+  ipfs: {
+    gateway: ['http://gateway.ipfs.io'],
+    api: ['https://ipfs.turkd.net']
+  }
+}
 
 function createWindow () {
 
@@ -69,17 +90,22 @@ function createWindow () {
 }
 
 
+function randomFromArray( arr) {
+  return arr[ Math.floor(Math.random() * arr.length) ]
+}
+
 function createEthRPCProxy(){
   var whitelist = ["eth_getBlockByNumber"]
+  var ethHost = randomFromArray(config.eth)
 
-  ethServer = http.createServer(function(req, res) {   
+  ethServer = http.createServer(function(req, res) {
 
     if (req.method == 'POST') {
         var body = '';
         req.on('data', function (data) { body += data; });
         req.on('end', function () {
             var data = JSON.parse(body);
-            request.post( 'https://eth.turkd.net', { body: body } ).pipe(res);
+	    request.post( ethHost, { body: body } ).pipe(res);
         });
     } else {
       res.writeHead(500, {'Content-Type': 'application/json'});
@@ -87,19 +113,23 @@ function createEthRPCProxy(){
     }
 
   });
- 
-  ethServer.listen(8545, 'localhost');
+
+  ethServer.listen(8545, 'localhost', function(){
+    config.active.eth = ethHost
+  });
 }
 
-function createIpfsRPCProxy(){
+function createIpfsProxy(){
+
+  var ipfsAPIHost = randomFromArray(config.ipfs.api)
   ipfsAPIServer = http.createServer(function(req, res) {
 
     if (req.method == 'POST') {
-        var body = '';
-        req.on('data', function (data) { body += data; });
-        req.on('end', function () {
-            request.post( 'https://ifps.turkd.net', { body: body } ).pipe(res);
-        });
+	var body = '';
+	req.on('data', function (data) { body += data; });
+	req.on('end', function () {
+	    request.post( ipfsAPIHost, { body: body } ).pipe(res);
+	});
     } else if (req.method == 'GET') {
       request.get('https://ipfs.turkd.net' + req.url).pipe(res )
     } else {
@@ -108,13 +138,16 @@ function createIpfsRPCProxy(){
     }
 
   });
-  ipfsAPIServer.listen(5001, 'localhost');
+  ipfsAPIServer.listen(5001, 'localhost',function(){
+    config.active.ipfs.api = ipfsAPIHost
+  });
 
 
+  var ipfsGatewayHost = randomFromArray( config.ipfs.gateway )
   ipfsServer = http.createServer(function(req, res) {
 
     if (req.method == 'GET') {
-      request.get('https://gateway.ipfs.io' + req.url).pipe(res )
+      request.get( ipfsGatewayHost + req.url).pipe(res )
     } else {
       res.writeHead(500, {'Content-Type': 'text/plain'});
       res.end("Not yet implemented");
@@ -122,9 +155,19 @@ function createIpfsRPCProxy(){
 
   });
  
-  ipfsServer.listen(8080, 'localhost');
+  ipfsServer.listen(8080, 'localhost', function(){
+    config.active.ipfs.gateway = ipfsGatewayHost
+  });
 }
 
+
+function createServer (){
+  server = http.createServer(function(req,res){
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    res.end(JSON.stringify( config ) )
+  })
+  server.listen(8989, 'localhost')
+}
 
 
 
@@ -152,20 +195,9 @@ app.on('ready', function(){
   appIcon.setToolTip('Welcome to the Future - Eth0s');
   appIcon.setContextMenu(contextMenu);
 
+  createServer();
   createEthRPCProxy();
-  createIpfsRPCProxy();
-
-  server = http.createServer(function(req, res) {
-    console.log( req.url )
-    if (req.url === '/') fs.createReadStream(__dirname + '/index.html' ).pipe( res )
-    else if (req.url.indexOf('/src') === 0 || req.url.indexOf('/node_modules') === 0) fs.createReadStream(__dirname + req.url ).pipe( res )
-    else {
-      res.writeHead(400, {'Content-Type': 'application/json'});
-      res.end("Bad Request");
-    }
-  })
-
-  server.listen( 8989, 'localhost' )
+  createIpfsProxy();
   createWindow();
 
 });

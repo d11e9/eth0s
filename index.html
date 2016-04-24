@@ -13,27 +13,55 @@
   <body>
 
     <nav>
-      <div class="left source" title="View Source at github.com"><i class="fa fa-code"></i><span>Source</span></div>
-      <div class="right info" title="View more information"><i class="fa fa-info-circle"></i><span>Info</span></div>
+      <div class="home" data-target="home" title="Home"><i class="fa fa-home"></i><span>Home</span></div>
+      <div class="info" data-target="info" title="View more information"><i class="fa fa-info-circle"></i><span>Info</span></div>
+      <div class="network" data-target="network" title="View Network"><i class="fa fa-plug"></i><span>Network</span></div>
     </nav>
     
-    <img class="logo" src="src/client/images/icon.png">
-    <h1>Eth&Oslash;s</h1>
+    <div class="container">
+      <div class="card home current">
+	<a class="logo" href="#">
+	  <img src="src/client/images/icon.png">
+	  <h1>Eth&Oslash;s</h1>
+	</a>
 
-    <div class="block">
-      <i class="fa fa-cube"></i> <span class="value" title="Most recent block number"></span>
-    </div>
+	<div class="block">
+	  <i class="fa fa-cube"></i> <span class="value" title="Most recent block number"></span>
+	</div>
 
-    <div class="about">
-      <div class="tab current">
-        An Ethereum Zero Client, connecting you to the network without the need to store the blockchain locally.
+	<div class="about">
+	  <p>An Ethereum Zero Client, connecting you to the network without the need to store the blockchain locally.</p>
+	  <p>Open source on <a class="source" href="http://github.com/d11e9/eth0s"><i class="fa fa-code-fork"></i> GitHub</a></p>
+	</div>
       </div>
-      <div class="tab">
-        IPFS v<span class="ipfsVersion"></span><br/>
-        We are using Node v<span class="nodeVersion"></span><br/>
-        Ethereum ZeroClient-7.3.0<br/>
-        Chromium v<span class="chromiumVersion"></span><br/>
-        and Electron v<span class="electronVersion"></span>
+
+      <div class="card info">
+	<a class="logo" href="#">
+	  <img src="src/client/images/icon.png">
+	  <h1>Eth&Oslash;s</h1>
+	</a>
+
+	<div class="about">
+	  IPFS v<span class="ipfsVersion"></span><br/>
+	  We are using Node v<span class="nodeVersion"></span><br/>
+	  Ethereum ZeroClient-7.3.0<br/>
+	  Chromium v<span class="chromiumVersion"></span><br/>
+	  and Electron v<span class="electronVersion"></span>
+	</div>
+      </div>
+
+      <div class="card network">
+	<a class="logo" href="#">
+	  <img src="src/client/images/icon.png">
+	  <h1>Eth&Oslash;s</h1>
+	</a>
+
+	<div class="about">
+	  <ul>
+	    <li>IPFS network provider: </li>
+	    <li>Ethereum node provider: </li>
+	  </ul>
+	</div>
       </div>
     </div>
 
@@ -48,19 +76,37 @@
 
     $(function(){
         var $currentBlock = $('.block .value')
-        var $tabs = $('.tab')
+	var $cards = $('.card')
 
         $('.nodeVersion').html( process.versions.node )
         $('.chromiumVersion').html( process.versions.chrome )
         $('.electronVersion').html( process.versions.electron )
 
 
-        $('.info').on( 'click', function(){
-          $tabs.toggleClass('current')
+	$('nav div').on( 'click', function(){
+	  var cls = $(this).attr('data-target');
+	  var $prv = $('.card.current')
+
+	  if ($prv.hasClass(cls)) return;
+
+	  $cards.removeClass('current')
+	  $prv.addClass('out')
+
+	  $('.card.' + cls).addClass('current')
+	  setTimeout(function(){
+	    $prv.removeClass('out')
+	  }, 1000)
+	})
+
+	$('a.logo').on( 'click', function(ev){
+	  $cards.removeClass('current')
+	  $('.card.home').addClass('current')
+	  ev.preventDefault()
         })
 
-        $('.source').on('click', function(){
+	$('.source').on('click', function(ev){
           shell.openExternal('https://github.com/d11e9/eth0s')
+	  ev.preventDefault()
         })
 
         function updateLatestBlock(){

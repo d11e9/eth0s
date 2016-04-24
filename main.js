@@ -22,6 +22,7 @@ let mainWindow;
 let appIcon;
 let server;
 let ethServer;
+let ipfsAPIServer;
 let ipfsServer;
 
 function createWindow () {
@@ -91,7 +92,7 @@ function createEthRPCProxy(){
 }
 
 function createIpfsRPCProxy(){
-  ipfsServer = http.createServer(function(req, res) {   
+  ipfsAPIServer = http.createServer(function(req, res) {
 
     if (req.method == 'POST') {
         var body = '';
@@ -107,8 +108,21 @@ function createIpfsRPCProxy(){
     }
 
   });
+  ipfsAPIServer.listen(5001, 'localhost');
+
+
+  ipfsServer = http.createServer(function(req, res) {
+
+    if (req.method == 'GET') {
+      request.get('https://gateway.ipfs.io' + req.url).pipe(res )
+    } else {
+      res.writeHead(500, {'Content-Type': 'text/plain'});
+      res.end("Not yet implemented");
+    }
+
+  });
  
-  ipfsServer.listen(5001, 'localhost');
+  ipfsServer.listen(8080, 'localhost');
 }
 
 

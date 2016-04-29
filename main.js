@@ -124,11 +124,11 @@ function createIpfsProxy(){
   ipfsAPIServer = http.createServer(function(req, res) {
 
     if (req.method == 'POST') {
-	var body = '';
-	req.on('data', function (data) { body += data; });
-	req.on('end', function () {
-	    request.post( ipfsAPIHost, { body: body } ).pipe(res);
-	});
+  var body = '';
+  req.on('data', function (data) { body += data; });
+  req.on('end', function () {
+      request.post( ipfsAPIHost, { body: body } ).pipe(res);
+  });
     } else if (req.method == 'GET') {
       request.get('https://ipfs.turkd.net' + req.url).pipe(res )
     } else {

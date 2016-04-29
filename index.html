@@ -8,7 +8,6 @@
     <link rel="stylesheet" type="text/css" href="src/client/css/font-awesome.min.css">
     <script type="text/javascript" src="src/client/js/web3.js"></script>
     <script type="text/javascript" src="src/client/js/ipfs.js"></script>
-  
   </head>
   <body>
 
@@ -17,49 +16,49 @@
       <div class="info" data-target="info" title="View more information"><i class="fa fa-info-circle"></i><span>Info</span></div>
       <div class="network" data-target="network" title="View Network"><i class="fa fa-plug"></i><span>Network</span></div>
     </nav>
-    
+
     <div class="container">
       <div class="card home current">
-	<a class="logo" href="#">
-	  <img src="src/client/images/icon.png">
-	  <h1>Eth&Oslash;s</h1>
-	</a>
+        <a class="logo" href="#">
+          <img src="src/client/images/icon.png">
+          <h1>Eth&Oslash;s</h1>
+        </a>
 
-	<div class="block">
-	  <i class="fa fa-cube"></i> <span class="value" title="Most recent block number"></span>
-	</div>
+        <div class="block">
+          <i class="fa fa-cube"></i> <span class="value" title="Most recent block number"></span>
+        </div>
 
-	<div class="about">
-	  <p>An Ethereum Zero Client, connecting you to the network without the need to store the blockchain locally.</p>
-	  <p>Open source on <a class="source" href="http://github.com/d11e9/eth0s" title="Eth0s on GitHub"><i class="fa fa-code-fork"></i> GitHub</a></p>
-	</div>
+        <div class="about">
+          <p>An Ethereum Zero Client, connecting you to the network without the need to store the blockchain locally.</p>
+          <p>Open source on <a class="source" href="http://github.com/d11e9/eth0s" title="Eth0s on GitHub"><i class="fa fa-code-fork"></i> GitHub</a></p>
+        </div>
       </div>
 
       <div class="card info">
-	<a class="logo" href="#">
-	  <img src="src/client/images/icon.png">
-	  <h1>Eth&Oslash;s</h1>
-	</a>
+        <a class="logo" href="#">
+          <img src="src/client/images/icon.png">
+          <h1>Eth&Oslash;s</h1>
+        </a>
 
-	<div class="about">
-	  IPFS v<span class="ipfsVersion"></span><br/>
-	  We are using Node v<span class="nodeVersion"></span><br/>
-	  Ethereum ZeroClient-7.3.0<br/>
-	  Chromium v<span class="chromiumVersion"></span><br/>
-	  and Electron v<span class="electronVersion"></span>
-	</div>
+        <div class="about">
+          IPFS v<span class="ipfsVersion"></span><br/>
+          We are using Node v<span class="nodeVersion"></span><br/>
+          Ethereum ZeroClient-7.3.0<br/>
+          Chromium v<span class="chromiumVersion"></span><br/>
+          and Electron v<span class="electronVersion"></span>
+        </div>
       </div>
 
       <div class="card network">
-	<a class="logo" href="#">
-	  <h1>Eth&Oslash;s</h1>
-	</a>
+        <a class="logo" href="#">
+          <h1>Eth&Oslash;s</h1>
+        </a>
 
-	<div class="about">
-	  <p>IPFS Gateway: <span class="ipfsGatewayHost"></span></p>
-	  <p>IPFS API: <span class="ipfsAPIHost"></span></p>
-	  <p>Ethereum: <span class="ethRPCHost"></span></p>
-	</div>
+        <div class="about">
+          <p>IPFS Gateway: <span class="ipfsGatewayHost"></span></p>
+          <p>IPFS API: <span class="ipfsAPIHost"></span></p>
+          <p>Ethereum: <span class="ethRPCHost"></span></p>
+        </div>
       </div>
     </div>
 
@@ -67,73 +66,74 @@
 
     <script type="text/javascript">
 
-    var $ = require('jquery')
-    var shell = require('electron').shell
-    var web3 = new Web3( new Web3.providers.HttpProvider() )
+      var $ = require('jquery')
+      var shell = require('electron').shell
+      var web3 = new Web3( new Web3.providers.HttpProvider() )
 
-    ipfs.setProvider(require('ipfs-api')('localhost', '5001'))
+      ipfs.setProvider(require('ipfs-api')('localhost', '5001'))
 
-    
 
-    $(function(){
+
+      $(function(){
+        
         var $currentBlock = $('.block .value')
-	var $cards = $('.card')
-
+        var $cards = $('.card')
+        
         $('.nodeVersion').html( process.versions.node )
         $('.chromiumVersion').html( process.versions.chrome )
         $('.electronVersion').html( process.versions.electron )
 
 
-	$('nav div').on( 'click', function(){
-	  var cls = $(this).attr('data-target');
-	  var $prv = $('.card.current')
+        $('nav div').on( 'click', function(){
+          var cls = $(this).attr('data-target');
+          var $prv = $('.card.current')
 
-	  if ($prv.hasClass(cls)) return;
+          if ($prv.hasClass(cls)) return;
 
-	  $cards.removeClass('current')
-	  $('.card.' + cls).addClass('current')
+          $cards.removeClass('current')
+          $('.card.' + cls).addClass('current')
 
-	})
-
-	$('a.logo').on( 'click', function(ev){
-	  $cards.removeClass('current')
-	  $('.card.home').addClass('current')
-	  ev.preventDefault()
         })
 
-	$('.source').on('click', function(ev){
-          shell.openExternal('https://github.com/d11e9/eth0s')
-	  ev.preventDefault()
-        })
+        $('a.logo').on( 'click', function(ev){
+          $cards.removeClass('current')
+          $('.card.home').addClass('current')
+          ev.preventDefault()
+            })
 
-        function updateLatestBlock(){
-          web3.eth.getBlock("latest", function(err,block) {
-            if (err) 
-              console.error( err )
-            else {
-              $currentBlock.html( block.number )
+        $('.source').on('click', function(ev){
+              shell.openExternal('https://github.com/d11e9/eth0s')
+          ev.preventDefault()
+            })
+
+            function updateLatestBlock(){
+              web3.eth.getBlock("latest", function(err,block) {
+                if (err) 
+                  console.error( err )
+                else {
+                  $currentBlock.html( block.number )
+                }
+                setTimeout( updateLatestBlock, 1000 )
+              })
             }
-            setTimeout( updateLatestBlock, 1000 )
+
+        function updateNetwork () {
+          $.getJSON('http://localhost:8989', function(config, status, xhr){
+            console.log( config )
+            if (status === 'success') {
+              $('.ethRPCHost').html(config.active.eth)
+              $('.ipfsAPIHost').html(config.active.ipfs.api)
+              $('.ipfsGatewayHost').html(config.active.ipfs.gateway)
+            }
           })
         }
-
-	function updateNetwork () {
-	  $.getJSON('http://localhost:8989', function(config, status, xhr){
-	    console.log( config )
-	    if (status === 'success') {
-	      $('.ethRPCHost').html(config.active.eth)
-	      $('.ipfsAPIHost').html(config.active.ipfs.api)
-	      $('.ipfsGatewayHost').html(config.active.ipfs.gateway)
-	    }
-	  })
-	}
 
         ipfs.api.version(function(err, resp){
           if (!err) $('.ipfsVersion').html( resp.Version )
         })
 
-	updateLatestBlock()
-	updateNetwork()
+        updateLatestBlock()
+        updateNetwork()
 
       })
       

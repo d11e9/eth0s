@@ -104,8 +104,7 @@ function createEthRPCProxy(){
         var body = '';
         req.on('data', function (data) { body += data; });
         req.on('end', function () {
-            var data = JSON.parse(body);
-	    request.post( ethHost, { body: body } ).pipe(res);
+          request.post( ethHost, { body: body } ).pipe(res);
         });
     } else {
       res.writeHead(500, {'Content-Type': 'application/json'});
@@ -169,11 +168,7 @@ function createServer (){
   server.listen(8989, 'localhost')
 }
 
-
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-app.on('ready', function(){
+function init (){
   if (platform === 'darwin') {
     appIcon = new Tray(__dirname + '/src/client/images/iconTemplate@2x.png');
   } else {
@@ -199,8 +194,11 @@ app.on('ready', function(){
   createEthRPCProxy();
   createIpfsProxy();
   createWindow();
+}
 
-});
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+app.on('ready', init);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {

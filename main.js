@@ -12,8 +12,13 @@ const dialog = electron.dialog
 
 const request = require('request')
 const http = require('http');
-const platform = require('os').platform();  
+const platform = require('os').platform()
 const fs = require('fs')
+
+const Web3 = require('web3')
+const ProviderEngine = require('web3-provider-engine')
+const RpcSubprovider = require('web3-provider-engine/subproviders/rpc.js')
+const createPayload = require('web3-provider-engine/util/create-payload.js')
 
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -26,7 +31,8 @@ let ipfsAPIServer;
 let ipfsServer;
 let config;
 
-
+let web3;
+let engine;
 
 config = {
   active: {
@@ -95,8 +101,6 @@ function randomFromArray( arr) {
 }
 
 function createEthRPCProxy(){
-  var whitelist = ["eth_getBlockByNumber"]
-  var ethHost = randomFromArray(config.eth)
 
   ethServer = http.createServer(function(req, res) {
 
@@ -104,7 +108,12 @@ function createEthRPCProxy(){
         var body = '';
         req.on('data', function (data) { body += data; });
         req.on('end', function () {
-          request.post( ethHost, { body: body } ).pipe(res);
+            var data = JSON.parse(body);
+            engine.sendAsync(createPayload(data), function(err, response){
+              if (err) res.writeHead(500, {'Content-Type': 'application/json'});
+              else res.writeHead(200, {'Content-Type': 'application/json'});
+              res.end(JSON.stringify( err || response ) );
+            })
         });
     } else {
       res.writeHead(500, {'Content-Type': 'application/json'});
@@ -113,9 +122,7 @@ function createEthRPCProxy(){
 
   });
 
-  ethServer.listen(8545, 'localhost', function(){
-    config.active.eth = ethHost
-  });
+  ethServer.listen(8545, 'localhost' );
 }
 
 function createIpfsProxy(){
@@ -123,12 +130,12 @@ function createIpfsProxy(){
   var ipfsAPIHost = randomFromArray(config.ipfs.api)
   ipfsAPIServer = http.createServer(function(req, res) {
 
-    if (req.method == 'POST') {
-  var body = '';
-  req.on('data', function (data) { body += data; });
-  req.on('end', function () {
-      request.post( ipfsAPIHost, { body: body } ).pipe(res);
-  });
+  if (req.method == 'POST') {
+      var body = '';
+      req.on('data', function (data) { body += data; });
+      req.on('end', function () {
+          request.post( ipfsAPIHost, { body: body } ).pipe(res);
+      });
     } else if (req.method == 'GET') {
       request.get('https://ipfs.turkd.net' + req.url).pipe(res )
     } else {
@@ -137,6 +144,7 @@ function createIpfsProxy(){
     }
 
   });
+
   ipfsAPIServer.listen(5001, 'localhost',function(){
     config.active.ipfs.api = ipfsAPIHost
   });
@@ -168,7 +176,22 @@ function createServer (){
   server.listen(8989, 'localhost')
 }
 
+function createProviderEngine(){
+
+  var ethHost = randomFromArray(config.eth)
+
+  engine = new ProviderEngine();
+  engine.addProvider(new RpcSubprovider({
+    rpcUrl: ethHost
+  }))
+  web3 = new Web3( engine );
+  engine.start();
+  config.active.eth = ethHost;
+
+}
+
 function init (){
+
   if (platform === 'darwin') {
     appIcon = new Tray(__dirname + '/src/client/images/iconTemplate@2x.png');
   } else {
@@ -190,6 +213,7 @@ function init (){
   appIcon.setToolTip('Welcome to the Future - Eth0s');
   appIcon.setContextMenu(contextMenu);
 
+  createProviderEngine();
   createServer();
   createEthRPCProxy();
   createIpfsProxy();

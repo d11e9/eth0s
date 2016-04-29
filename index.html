@@ -41,9 +41,11 @@
         </a>
 
         <div class="about">
+          <p>v<span class="version"></span> Built using:</p>
           IPFS v<span class="ipfsVersion"></span><br/>
-          We are using Node v<span class="nodeVersion"></span><br/>
-          Ethereum ZeroClient-7.3.0<br/>
+          Web3 v<span class="web3Version"></span><br/>
+          Web3 Provider Engine v<span class="providerEngineVersion"></span><br/>
+          Node v<span class="nodeVersion"></span><br/>
           Chromium v<span class="chromiumVersion"></span><br/>
           and Electron v<span class="electronVersion"></span>
         </div>
@@ -99,31 +101,36 @@
           $cards.removeClass('current')
           $('.card.home').addClass('current')
           ev.preventDefault()
-            })
+        })
 
         $('.source').on('click', function(ev){
-              shell.openExternal('https://github.com/d11e9/eth0s')
+          shell.openExternal('https://github.com/d11e9/eth0s')
           ev.preventDefault()
-            })
+        })
 
-            function updateLatestBlock(){
-              web3.eth.getBlock("latest", function(err,block) {
-                if (err) 
-                  console.error( err )
-                else {
-                  $currentBlock.html( block.number )
-                }
-                setTimeout( updateLatestBlock, 1000 )
-              })
+        function updateLatestBlock(){
+          web3.eth.getBlock("latest", function(err,block) {
+            if (err) 
+              console.error( err )
+            else {
+              $currentBlock.html( block.number )
             }
+            setTimeout( updateLatestBlock, 1000 )
+          })
+        }
 
         function updateNetwork () {
           $.getJSON('http://localhost:8989', function(config, status, xhr){
             console.log( config )
             if (status === 'success') {
+
               $('.ethRPCHost').html(config.active.eth)
               $('.ipfsAPIHost').html(config.active.ipfs.api)
               $('.ipfsGatewayHost').html(config.active.ipfs.gateway)
+
+              $('.version').html(config.pkg.version)
+              $('.web3Version').html(config.pkg.dependencies.web3.slice(1))
+              $('.providerEngineVersion').html(config.pkg.dependencies['web3-provider-engine'].slice(1))
             }
           })
         }

@@ -1,24 +1,31 @@
 'use strict';
 
+const pkg = require('./package.json')
 const electron = require('electron');
+
 // Module to control application life.
 const app = electron.app;
+
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
+
 // Modules to create menus and trays.
 const Menu = electron.Menu;
 const Tray = electron.Tray;
 const dialog = electron.dialog
 
+// Networking modules
 const request = require('request')
 const http = require('http');
 const platform = require('os').platform()
 const fs = require('fs')
 
+// Eth and web3 modules
 const Web3 = require('web3')
 const ProviderEngine = require('web3-provider-engine')
 const RpcSubprovider = require('web3-provider-engine/subproviders/rpc.js')
 const createPayload = require('web3-provider-engine/util/create-payload.js')
+
 
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -49,7 +56,8 @@ config = {
   ipfs: {
     gateway: ['http://gateway.ipfs.io'],
     api: ['https://ipfs.turkd.net']
-  }
+  },
+  pkg: pkg
 }
 
 function createWindow () {

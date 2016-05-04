@@ -22,9 +22,17 @@ const fs = require('fs')
 
 // Eth and web3 modules
 const Web3 = require('web3')
+
 const ProviderEngine = require('web3-provider-engine')
-const RpcSubprovider = require('web3-provider-engine/subproviders/rpc.js')
 const createPayload = require('web3-provider-engine/util/create-payload.js')
+const IpcSubprovider = require('web3-provider-engine/subproviders/ipc.js')
+const CacheSubprovider = require('web3-provider-engine/subproviders/cache.js')
+const FixtureSubprovider = require('web3-provider-engine/subproviders/fixture.js')
+const FilterSubprovider = require('web3-provider-engine/subproviders/filters.js')
+const VmSubprovider = require('web3-provider-engine/subproviders/vm.js')
+const HookedWalletSubprovider = require('web3-provider-engine/subproviders/hooked-wallet.js')
+const NonceSubprovider = require('web3-provider-engine/subproviders/nonce-tracker.js')
+const RpcSubprovider = require('web3-provider-engine/subproviders/rpc.js')
 
 
 
@@ -40,6 +48,7 @@ let config;
 
 let web3;
 let engine;
+let socketPath = getIPCSocketPath();
 
 config = {
   active: {
@@ -145,10 +154,10 @@ function createIpfsProxy(){
           request.post( ipfsAPIHost, { body: body } ).pipe(res);
       });
     } else if (req.method == 'GET') {
-      request.get('https://ipfs.turkd.net' + req.url).pipe(res )
+      request.get(ipfsAPIHost + req.url).pipe(res);
     } else {
       res.writeHead(500, {'Content-Type': 'text/plain'});
-      res.end("Not yet implemented");
+      res.end("Not Implemented");
     }
 
   });
@@ -189,9 +198,62 @@ function createProviderEngine(){
   var ethHost = randomFromArray(config.eth)
 
   engine = new ProviderEngine();
+
+  engine.addProvider(new FixtureSubprovider({
+    net_listening: true,
+    eth_hashrate: '0x00',
+    eth_mining: false,
+    eth_syncing: true
+  }))
+
+  // cache layer
+  engine.addProvider(new CacheSubprovider())
+
+  // filters
+  engine.addProvider(new FilterSubprovider())
+
+  // pending nonce
+  engine.addProvider(new NonceSubprovider())
+
+  // vm
+  engine.addProvider(new VmSubprovider())
+
+  // Hooked wallet
+  engine.addProvider(new HookedWalletSubprovider({
+    getAccounts: function(cb){
+      console.log('getAccounts')
+      dialog.showMessageBox({
+	type: "question",
+	buttons: ["allow", "disallow"],
+	defaultId: 1,
+	cancelId: 1,
+	noLink: true,
+	title: "getAccounts",
+	message: "A dApp is requesting accounts",
+	detail: "details"
+      },function(responseIndex){
+	cb( null, responseIndex == 0 ? ['0xdeadbeaf'] : [] )
+      })
+
+    },
+    approveTransaction: function(txParams, cb){
+      console.log(approveTransaction, txParams)
+      cb( null, !confirm("approveTransaction") )
+    },
+    signTransaction: function(txParams, cb){
+      console.log(signTransaction, txParams)
+      cb( null, confirm("signTransaction") )
+    },
+    signMessage: function(msgParams, cb){
+      console.log('signMessage', msgParams)
+      cb( null, confirm("signMessage") )
+    }
+  }))
+
   engine.addProvider(new RpcSubprovider({
     rpcUrl: ethHost
   }))
+
   web3 = new Web3( engine );
   engine.start();
   config.active.eth = ethHost;

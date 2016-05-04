@@ -1,6 +1,6 @@
 {
   "name": "eth0s",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "An Ethereum Zero Client",
   "main": "main.js",
   "scripts": {
@@ -11,13 +11,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron/electron-quick-start.git"
+    "url": "git+https://github.com/d11e9/eth0s.git"
   },
   "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial"
+    "ethereum",
+    "client",
+    "electron",
+    "ipfs"
   ],
   "author": "GitHub",
   "license": "MIT",
@@ -27,7 +27,8 @@
   "homepage": "https://github.com/d11e9/eth0s#readme",
   "devDependencies": {
     "electron-packager": "^7.0.1",
-    "electron-prebuilt": "^0.37.0"
+    "electron-prebuilt": "^0.37.0",
+    "electron-rebuild": "^1.1.3"
   },
   "dependencies": {
     "ipfs-js": "0.0.9",
@@ -35,6 +36,6 @@
     "querystring": "^0.2.0",
     "request": "^2.72.0",
     "web3": "^0.15.3",
-    "web3-provider-engine": "^7.6.0"
+    "web3-provider-engine": "^7.6.2"
   }
 }

@@ -48,7 +48,7 @@ let config;
 
 let web3;
 let engine;
-let socketPath = getIPCSocketPath();
+//let socketPath = getIPCSocketPath();
 
 config = {
   active: {
@@ -59,8 +59,8 @@ config = {
     }
   },
   eth: [
-    'https://eth.turkd.net',
-    'https://testrpc.metamask.io'
+    'https://eth.turkd.net' //,
+    //'https://testrpc.metamask.io'
   ],
   ipfs: {
     gateway: ['http://gateway.ipfs.io'],
@@ -126,10 +126,15 @@ function createEthRPCProxy(){
         req.on('data', function (data) { body += data; });
         req.on('end', function () {
             var data = JSON.parse(body);
+            // console.log( "Incomming rpc request: ", data )
             engine.sendAsync(createPayload(data), function(err, response){
-              if (err) res.writeHead(500, {'Content-Type': 'application/json'});
-              else res.writeHead(200, {'Content-Type': 'application/json'});
-              res.end(JSON.stringify( err || response ) );
+              if (err) {
+                console.error( "Error proxying rpc to web3 engine: ", err )
+                res.writeHead(500, {'Content-Type': 'application/json'});
+              } else {
+                res.writeHead(200, {'Content-Type': 'application/json'});
+              }
+              res.end( JSON.stringify( err || response ) );
             })
         });
     } else {
@@ -223,16 +228,16 @@ function createProviderEngine(){
     getAccounts: function(cb){
       console.log('getAccounts')
       dialog.showMessageBox({
-	type: "question",
-	buttons: ["allow", "disallow"],
-	defaultId: 1,
-	cancelId: 1,
-	noLink: true,
-	title: "getAccounts",
-	message: "A dApp is requesting accounts",
-	detail: "details"
+        type: "question",
+        buttons: ["allow", "disallow"],
+        defaultId: 1,
+        cancelId: 1,
+        noLink: true,
+        title: "getAccounts",
+        message: "A dApp is requesting accounts",
+        detail: "details"
       },function(responseIndex){
-	cb( null, responseIndex == 0 ? ['0xdeadbeaf'] : [] )
+        cb( null, responseIndex == 0 ? ['0xdeadbeaf'] : [] )
       })
 
     },
@@ -250,9 +255,14 @@ function createProviderEngine(){
     }
   }))
 
-  engine.addProvider(new RpcSubprovider({
+
+  let rpcProvider = new RpcSubprovider({
     rpcUrl: ethHost
-  }))
+  })
+  
+  console.log(rpcProvider);
+
+  engine.addProvider(rpcProvider)
 
   web3 = new Web3( engine );
   engine.start();

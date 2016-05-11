@@ -109,6 +109,7 @@
         })
 
         function updateLatestBlock(){
+          console.log("getBlock")
           web3.eth.getBlock("latest", function(err,block) {
             if (err) 
               console.error( err )

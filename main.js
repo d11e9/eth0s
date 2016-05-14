@@ -38,7 +38,7 @@ function randomFromArray( arr) {
 function init (){
 
   config.active.eth.ipc = utils.getEthereumDataDir() + "/geth.ipc"
-  config.active.eth.rpc = randomFromArray( config.eth )
+  config.active.eth.rpc = randomFromArray( config.eth.rpc )
 
   config.active.ipfs.api = randomFromArray( config.ipfs.api )
   config.active.ipfs.gateway = randomFromArray( config.ipfs.gateway )

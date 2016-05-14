@@ -1,18 +1,20 @@
 {
   "active": {
     "eth": {
-    	"rpc": null,
-    	"ipc": null
+        "rpc": null,
+        "ipc": null
     },
     "ipfs": {
       "api": null,
       "gateway": null
     }
   },
-  "eth": [
-    "https://eth.turkd.net",
-    "https://testrpc.metamask.io"
-  ],
+  "eth": {
+    "rpc" : [
+        "https://eth.turkd.net",
+        "https://testrpc.metamask.io"
+    ]
+  }
   "ipfs": {
     "gateway": ["http://gateway.ipfs.io"],
     "api": ["https://ipfs.turkd.net"]

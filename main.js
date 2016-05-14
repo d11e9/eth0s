@@ -35,6 +35,9 @@ const NonceSubprovider = require('web3-provider-engine/subproviders/nonce-tracke
 const RpcSubprovider = require('web3-provider-engine/subproviders/rpc.js')
 
 
+const IPCSocket = require('./src/ipc.js')
+
+
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -198,6 +201,29 @@ function createServer (){
   server.listen(8989, 'localhost')
 }
 
+
+function createIPCSocket(){
+  return IPCSocket(function(request, socket){
+    
+    console.log("IPC request", request.toString('utf8'))
+    var data;
+    try {
+      data = JSON.parse( request.toString('utf8').split('\n')[0] )
+    } catch (e) {}
+
+    console.log("IPC data:", typeof data, data )
+    if (data) engine.sendAsync(data, function(err, response){
+      if (err) {
+        console.error( "Error proxying ipc to web3 engine: ", err, response )
+        socket.write(JSON.stringify(err))
+      } else {
+        console.log("sending response: ", response)
+        socket.write( JSON.stringify(response));
+      }
+    });
+  })
+}
+
 function createProviderEngine(){
 
   var ethHost = randomFromArray(config.eth)
@@ -208,7 +234,7 @@ function createProviderEngine(){
     net_listening: true,
     eth_hashrate: '0x00',
     eth_mining: false,
-    eth_syncing: true
+    eth_syncing: false
   }))
 
   // cache layer
@@ -221,7 +247,7 @@ function createProviderEngine(){
   engine.addProvider(new NonceSubprovider())
 
   // vm
-  engine.addProvider(new VmSubprovider())
+  // engine.addProvider(new VmSubprovider())
 
   // Hooked wallet
   engine.addProvider(new HookedWalletSubprovider({
@@ -298,6 +324,10 @@ function init (){
   createEthRPCProxy();
   createIpfsProxy();
   createWindow();
+
+  createIPCSocket();
+
+
 }
 
 // This method will be called when Electron has finished

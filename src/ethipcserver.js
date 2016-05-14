@@ -30,22 +30,33 @@ function EthIPCServer (options) {
 
   this.handleRequest = function(request, socket){
     
-    if (options.verbose) console.log("IPC request", request.toString('utf8'))
-    var data;
-    try {
-      data = JSON.parse( request.toString('utf8').split('\n')[0] )
-    } catch (e) {}
+    utf8Request = request.toString('utf8')
+    if (options.verbose) console.log("IPC request", utf8Request ) 
 
-    if (options.verbose) console.log("IPC data:", typeof data, data )
-    if (data) self.engine.sendAsync(data, function(err, response){
-      if (err) {
-        if (options.verbose) console.error( "Error proxying ipc to web3 engine: ", err, data, response )
-        socket.write(JSON.stringify(err))
-      } else {
-        if (options.verbose) console.log("sending response: ", response)
-        socket.write( JSON.stringify(response));
+    var requests = utf8Request.split('\n')
+    console.log( ">>>>>>>>>>>>>>> ", utf8Request[utf8Request.length -1], requests.length)
+    console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    for (var i=0; i < requests.length; i++) {
+      var data;
+      try {
+        data = JSON.parse( requests[i] )
+      } catch (e) {
+        console.log("IPC request parsing Error: ", e, requests[i])
       }
-    });
+
+
+
+      if (options.verbose) console.log("IPC data:", typeof data, data )
+      if (data) self.engine.sendAsync(data, function(err, response){
+        if (err) {
+          if (options.verbose) console.error( "Error proxying ipc to web3 engine: ", err, data, response )
+          socket.write(JSON.stringify(err))
+        } else {
+          if (options.verbose) console.log("sending response: ", response)
+          socket.write( JSON.stringify(response));
+        }
+      });  
+    }
   }
 
   if (options.verbose) console.log( "Creating Eth IPC Server at socket:", options.socketPath)

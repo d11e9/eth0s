@@ -19,10 +19,7 @@ function createWindow (mainWindow) {
     minHeight: 450,
     frame: true,
     closable: true,
-    show: true,
-    webPrefernces: {
-      preload: __dirname + '/client/js/inject.js'
-    }
+    show: true
   });
 
   // and load the index.html of the app.

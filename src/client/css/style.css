@@ -6,7 +6,6 @@ html, body  {
 }
 body {
 	font-family: monospace;
-	text-align: center;
 	background-color: white;
 	background: linear-gradient(to bottom, #66a0ff 0%,#f7f7f7 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 	box-sizing: border-box;
@@ -33,11 +32,16 @@ nav i.fa {
 	opacity: 0.5;
 }
 
-nav div span {
+nav .nav span {
 	margin-left: 0.6em;
 	line-height: 1.5em;
 	vertical-align: text-bottom;
 	display: inline-block;
+}
+
+nav .current {
+	color: white;
+	text-shadow: 0px 0px 3px rgb(2, 36, 93)
 }
 
 .logo {
@@ -75,6 +79,7 @@ nav div span {
 	-webkit-perspective: 800;
 	-webkit-transform: rotatey(-180deg);
 	pointer-events: none;
+	text-align: center;
 }
 
 .card.current {
@@ -92,4 +97,63 @@ nav div span {
 	color: black;
 	font-weight: bold;
 	cursor: pointer;
+}
+
+.card.network {
+	text-align: left;
+}
+
+.card .about {
+	margin-top: 3em;
+}
+
+
+table {
+	display: block;
+	text-align: left;
+	padding: 0.6em;
+    background-color: rgba(255,255,255,0.25);
+    border-radius: 0.25em;
+}
+
+table td {
+	font-size: 10px;
+	padding: 0.4em 0em 0.4em 0;
+	word-break: break-word;
+}
+
+table td:nth-child(2),
+table th:nth-child(2) {
+	padding-left: 15px;
+	word-break: break-all;
+}
+
+td .port:before {
+	content: ":"
+}
+td .port:empty:before {
+	content: ""
+}
+
+td.secure {
+	color: green;
+}
+
+td i.fa-lock {
+	display: none;
+}
+
+td.secure i.fa-lock {
+	display: inline-block;
+	margin-right: 0.4em;
+}
+
+td .host {
+	font-weight: bold;
+}
+
+
+.identicon {
+	width: 2em;
+	height: 2em;
 }

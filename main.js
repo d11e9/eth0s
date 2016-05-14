@@ -3,11 +3,13 @@
 const platform = require('os').platform()
 const request = require('request')
 const http = require('http');
-const pkg = require('./package.json')
 const fs = require('fs')
 
-// Utils
-const utils = require('./src/utils.js');
+const pkg = require('./package.json')
+const utils = require('./src/utils.js')
+const config = require('./config.json')
+
+config.pkg = pkg
 
 const electron = require('electron');
 const app = electron.app; // Module to control application life.
@@ -26,37 +28,26 @@ const createWindow = require('./src/create-window.js')
 let mainWindow;
 let tray;
 let server;
-let config;
 
-config = {
-  active: {
-    eth: null,
-    ipfs: {
-      api: null,
-      gateway: null
-    }
-  },
-  eth: [
-    'https://eth.turkd.net' //,
-    //'https://testrpc.metamask.io'
-  ],
-  ipfs: {
-    gateway: ['http://gateway.ipfs.io'],
-    api: ['https://ipfs.turkd.net']
-  },
-  pkg: pkg
-}
+
 
 function randomFromArray( arr) {
   return arr[ Math.floor(Math.random() * arr.length) ]
 }
 
 function init (){
+
+  config.active.eth.ipc = utils.getEthereumDataDir() + "/geth.ipc"
+  config.active.eth.rpc = randomFromArray( config.eth )
+
+  config.active.ipfs.api = randomFromArray( config.ipfs.api )
+  config.active.ipfs.gateway = randomFromArray( config.ipfs.gateway )
+
   
 
   let providerEngine = new ProviderEngine({
     verbose: true,
-    rpc: randomFromArray( config.eth )
+    rpc: config.active.eth.rpc
   })
 
   let ethRpcProxy = new EthRPCProxy({
@@ -67,13 +58,13 @@ function init (){
 
   let ipfsProxy = new IpfsProxy({
     verbose: true,
-    api: randomFromArray( config.ipfs.api ),
-    gateway: randomFromArray( config.ipfs.gateway )
+    api: config.active.ipfs.api,
+    gateway: config.active.ipfs.gateway
   })
 
   let ethIpcServer = new EthIPCServer({
     verbose: true,
-    socketPath: utils.getEthereumDataDir() + "/geth.ipc",
+    socketPath: config.active.eth.ipc,
     engine: providerEngine.engine
   })
 
@@ -114,7 +105,3 @@ app.on('activate', function () {
     createWindow();
   }
 });
-
-app.on('error', function(err){
-  console.log( "App Error: ", err)
-})

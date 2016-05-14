@@ -1,6 +1,9 @@
+const electron = require('electron');
+const dialog = electron.dialog
 
 // Eth and web3 modules
 const Web3 = require('web3')
+
 
 const ProviderEngine = require('web3-provider-engine')
 const createPayload = require('web3-provider-engine/util/create-payload.js')
@@ -22,7 +25,8 @@ function Web3ProviderEngine(options){
     net_listening: true,
     eth_hashrate: '0x00',
     eth_mining: false,
-    eth_syncing: false
+    eth_syncing: false,
+    net_peerCount: 1
   }))
 
   // cache layer
@@ -41,24 +45,22 @@ function Web3ProviderEngine(options){
   this.engine.addProvider(new HookedWalletSubprovider({
     getAccounts: function(cb){
       console.log('getAccounts')
-      // dialog.showMessageBox({
-      //   type: "question",
-      //   buttons: ["allow", "disallow"],
-      //   defaultId: 1,
-      //   cancelId: 1,
-      //   noLink: true,
-      //   title: "getAccounts",
-      //   message: "A dApp is requesting accounts",
-      //   detail: "details"
-      // },function(responseIndex){
-      //   cb( null, responseIndex == 0 ? ['0xdeadbeaf'] : [] )
-      // })
-      cb( null, ['0x7906edf7472852066e5101e8638f25c4da023fc2'])
-
+      cb( null, ['0x7906edf7472852066e5101e8638f25c4da023fc2', '0xea674fdde714fd979de3edf0f56aa9716b898ec8'])
     },
     approveTransaction: function(txParams, cb){
       console.log(approveTransaction, txParams)
-      cb( null, !confirm("approveTransaction") )
+      dialog.showMessageBox({
+        type: "question",
+        buttons: ["allow", "disallow"],
+        defaultId: 1,
+        cancelId: 1,
+        noLink: true,
+        title: "approveTransaction",
+        message: "A dApp is attempting to have a transaction approved",
+        detail: "details..."
+      },function(responseIndex){
+        cb( null, responseIndex == 0 ? true : false )
+      })
     },
     signTransaction: function(txParams, cb){
       console.log(signTransaction, txParams)

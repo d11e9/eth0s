@@ -12,14 +12,14 @@
   <body>
 
     <nav>
-      <div class="home" data-target="home" title="About"><i class="fa fa-home"></i><span>About</span></div>
-      <div class="info" data-target="info" title="View more information"><i class="fa fa-info-circle"></i><span>Info</span></div>
-      <div class="network" data-target="network" title="View Network"><i class="fa fa-plug"></i><span>Network</span></div>
+      <div class="nav home current" data-target="home" title="About"><i class="fa fa-home"></i><span>About</span></div>
+      <div class="nav keys" data-target="keys" title="Keys & Accounts"><i class="fa fa-key"></i><span>Keys</span></div>
+      <div class="nav network" data-target="network" title="View Network"><i class="fa fa-plug"></i><span>Network</span></div>
     </nav>
 
     <div class="container">
       <div class="card home current">
-        <a class="logo" href="#">
+        <a class="nav logo" href="#" data-target="info">
           <img src="src/client/images/icon.png">
           <h1>Eth&Oslash;s</h1>
         </a>
@@ -28,14 +28,14 @@
           <i class="fa fa-cube"></i> <span class="value" title="Most recent block number"></span>
         </div>
 
-        <div class="about">
+        <div>
           <p>An Ethereum Zero Client, connecting you to the network without the need to store the blockchain locally.</p>
           <p>Open source on <a class="source" href="http://github.com/d11e9/eth0s" title="Eth0s on GitHub"><i class="fa fa-code-fork"></i> GitHub</a></p>
         </div>
       </div>
 
       <div class="card info">
-        <a class="logo" href="#">
+        <a class="nav logo" href="#" data-target="home">
           <img src="src/client/images/icon.png">
           <h1>Eth&Oslash;s</h1>
         </a>
@@ -52,16 +52,67 @@
       </div>
 
       <div class="card network">
-        <a class="logo" href="#">
-          <h1>Eth&Oslash;s</h1>
-        </a>
 
         <div class="about">
-          <p>IPFS Gateway: <span class="ipfsGatewayHost"></span></p>
-          <p>IPFS API: <span class="ipfsAPIHost"></span></p>
-          <p>Ethereum: <span class="ethRPCHost"></span></p>
+          <p>Connecting to Ethereum and IPFS networks via the following hosts:</p>
+          <table>
+            <tr><th>Network</th><th>Host</th></tr>
+            <tr>
+              <td>IPFS (Gateway)</td>
+              <td class="ipfsGatewayHost">
+                <i class="fa-lock fa"></i><span class="protocol"></span>//<span class="host"></span><span class="port"></span>
+              </td>
+            </tr>
+            <tr>
+              <td>IPFS (API)</td>
+              <td class="ipfsAPIHost">
+                <i class="fa-lock fa"></i><span class="protocol"></span>//<span class="host"></span><span class="port"></span>
+              </td>
+            </tr>
+            <tr>
+              <td>Ethereum (RPC)</td>
+              <td class="ethRPCHost">
+                <i class="fa-lock fa"></i><span class="protocol"></span>//<span class="host"></span><span class="port"></span>
+              </td>
+            </tr>
+          </table>
+          <p>Exposed locally at the following endpoints:</p>
+          <table>
+            <tr><th>Protocol</th><th>Endpoint</th></tr>
+            <tr>
+              <td>IPFS (Gateway)</td>
+              <td class="ipfsGatewayEndpoint">
+                <i class="fa-lock fa"></i><span class="protocol"></span>//<span class="host"></span><span class="port"></span>
+              </td>
+            </tr>
+            <tr>
+              <td>IPFS (API)</td>
+              <td class="ipfsAPIEndpoint">
+                <i class="fa-lock fa"></i><span class="protocol"></span>//<span class="host"></span><span class="port"></span>
+              </td>
+            </tr>
+            <tr>
+              <td>Ethereum (RPC)</td>
+              <td class="ethRPCEndpoint">
+                <i class="fa-lock fa"></i><span class="protocol"></span>//<span class="host"></span><span class="port"></span>
+              </td>
+            </tr>
+            <tr><td>Ethereum (IPC)</td><td class="ethIPCSocketPath"></td></tr>
+          </table>
         </div>
       </div>
+
+      <div class="card keys">
+        <div class="about">
+          <table>
+            <tr><td><img class="identicon"></img></td><td>0xdeadbeaf</td></tr>
+            <tr><td><img class="identicon"></img></td><td>0xdeadbeaf</td></tr>
+            <tr><td><img class="identicon"></img></td><td>0xdeadbeaf</td></tr>
+          </table>
+        </div>
+      </div>
+
+
     </div>
 
 
@@ -80,27 +131,25 @@
         
         var $currentBlock = $('.block .value')
         var $cards = $('.card')
+        var $navs = $('.nav')
         
         $('.nodeVersion').html( process.versions.node )
         $('.chromiumVersion').html( process.versions.chrome )
         $('.electronVersion').html( process.versions.electron )
 
 
-        $('nav div').on( 'click', function(){
-          var cls = $(this).attr('data-target');
+        $navs.on( 'click', function(ev){
+          ev.preventDefault();
+          
+          var cls = $(this).attr('data-target')
           var $prv = $('.card.current')
 
           if ($prv.hasClass(cls)) return;
 
+          $navs.removeClass('current')
           $cards.removeClass('current')
           $('.card.' + cls).addClass('current')
-
-        })
-
-        $('a.logo').on( 'click', function(ev){
-          $cards.removeClass('current')
-          $('.card.home').addClass('current')
-          ev.preventDefault()
+          $('.nav.'+ cls).addClass('current')
         })
 
         $('.source').on('click', function(ev){
@@ -120,18 +169,34 @@
           })
         }
 
+
+        function renderUri($container, uri) {
+          var link = document.createElement('a')
+          link.href = uri
+          $container.find('.protocol').text(link.protocol)
+          $container.find('.host').text(link.hostname)
+          $container.find('.port').text(link.port)
+          $container.toggleClass('secure', link.protocol === 'https:')
+        }
+
         function updateNetwork () {
           $.getJSON('http://localhost:8989', function(config, status, xhr){
             console.log( config )
             if (status === 'success') {
 
-              $('.ethRPCHost').html(config.active.eth)
-              $('.ipfsAPIHost').html(config.active.ipfs.api)
-              $('.ipfsGatewayHost').html(config.active.ipfs.gateway)
+              renderUri( $('.ethRPCHost'), config.active.eth.rpc )
+              renderUri( $('.ipfsAPIHost'), config.active.ipfs.api )
+              renderUri( $('.ipfsGatewayHost'), config.active.ipfs.gateway )
+
+              renderUri( $('.ethRPCEndpoint'), 'http://localhost:8545' )
+              renderUri( $('.ipfsAPIEndpoint'), 'http://localhost:5001' )
+              renderUri( $('.ipfsGatewayEndpoint'), 'http://localhost:8080' )
 
               $('.version').html(config.pkg.version)
               $('.web3Version').html(config.pkg.dependencies.web3.slice(1))
               $('.providerEngineVersion').html(config.pkg.dependencies['web3-provider-engine'].slice(1))
+
+              $('.ethIPCSocketPath').html(config.active.eth.ipc)
             }
           })
         }

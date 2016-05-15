@@ -14,7 +14,7 @@
         "https://eth.turkd.net",
         "https://testrpc.metamask.io"
     ]
-  }
+  },
   "ipfs": {
     "gateway": ["http://gateway.ipfs.io"],
     "api": ["https://ipfs.turkd.net"]

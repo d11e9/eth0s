@@ -12,7 +12,11 @@ For the most recent prebuilt binaries for particular platforms see: [Releases](h
 Getting Started
 ---------------
 
-Once you have the application either by downloading the release fo your platform, or building from source (documented below), running it will automatically connect to exteral hosts to connect you to the Ethereum and IPFS networks, as though you were running full nodes for them locally.
+Once you have the application either by downloading the release for your platform, or building from source (documented below), running it will automatically connect to exteral hosts and connect you to the Ethereum and IPFS networks, as though you were running full nodes for them locally.
+
+#### Wallet
+
+Eth0s has been tested with [Mist/Ethereum-Wallet](https://github.com/ethereum/mist) and does not provide a wallet of its own.
 
 
 Development

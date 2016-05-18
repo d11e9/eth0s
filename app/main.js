@@ -1,5 +1,7 @@
 'use strict';
 
+console.log("START")
+
 const platform = require('os').platform()
 const request = require('request')
 const http = require('http');
@@ -10,6 +12,7 @@ const utils = require('./src/utils.js')
 const config = require('./config.json')
 
 config.pkg = pkg
+console.log("Running Eth0s v", pkg.version)
 
 const electron = require('electron');
 const app = electron.app; // Module to control application life.
@@ -37,7 +40,7 @@ function randomFromArray( arr) {
 
 function init (){
 
-  config.active.eth.ipc = utils.getEthereumDataDir() + "/geth.ipc"
+  config.active.eth.ipc = utils.getEthereumDataDir("/geth.ipc")
   config.active.eth.rpc = randomFromArray( config.eth.rpc )
 
   config.active.ipfs.api = randomFromArray( config.ipfs.api )

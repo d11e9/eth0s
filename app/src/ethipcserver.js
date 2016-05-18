@@ -1,6 +1,7 @@
 const net = require('net')
 const request = require('request')
 const fs = require('fs')
+const path = require('path')
 
 const createPayload = require('web3-provider-engine/util/create-payload.js')
 
@@ -84,6 +85,10 @@ function EthIPCServer (options) {
 
 
     
+  }
+
+  if (process.platform === 'win32') {
+    options.socketPath = path.join('\\\\?\\pipe', options.socketPath )
   }
 
   if (options.verbose) console.log( "Creating Eth IPC Server at socket:", options.socketPath)

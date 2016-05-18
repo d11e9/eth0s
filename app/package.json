@@ -1,0 +1,34 @@
+{
+  "name": "eth0s",
+  "version": "0.0.6",
+  "description": "An Ethereum Zero Client",
+  "main": "main.js",
+  "scripts": {
+    "start": "../node_modules/.bin/electron main.js",
+    "postinstall": "node ./src/post-install.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/d11e9/eth0s.git"
+  },
+  "keywords": [
+    "ethereum",
+    "client",
+    "electron",
+    "ipfs"
+  ],
+  "author": "GitHub",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/d11e9/eth0s/issues"
+  },
+  "homepage": "https://github.com/d11e9/eth0s#readme",
+  "dependencies": {
+    "ipfs-js": "0.0.9",
+    "jquery": "^2.2.3",
+    "querystring": "^0.2.0",
+    "request": "^2.72.0",
+    "web3": "^0.15.3",
+    "web3-provider-engine": "^7.6.2"
+  }
+}

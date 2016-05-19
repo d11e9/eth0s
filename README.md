@@ -29,7 +29,7 @@ Development
 
 #### Nodejs version
 
-When  building/running from source, you need to make use of `n` or `nvm` to run a version of nodejs that matches the version shipped with electron, which i belive is `v5.10.1`
+When  building/running from source, you need to make use of `n` or `nvm` to run a version of nodejs that matches the version shipped with electron, which i believe is `v5.10.1`
 
 #### Building on windows
 

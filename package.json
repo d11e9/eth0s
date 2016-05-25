@@ -8,8 +8,7 @@
     "package-osx": "electron-packager ./app Eth0s --platform=darwin --arch=x64 --out ./dist --overwrite --icon=app/src/client/images/icon.icns",
     "package-win": "electron-packager ./app Eth0s --platform=win32 --arch=x64 --out ./dist --tmpdir ./tmp --overwrite",
     "package": "electron-packager ./app Eth0s --all --out ./dist --overwrite --icon=app/src/client/images/icon.icns",
-    "prepackage-win": "node prepackage-win.js",
-    "Xpostpackage-win": "node postpackage-win.js"
+    "prepackage-win": "node prepackage-win.js"
   },
   "repository": {
     "type": "git",
@@ -31,5 +30,6 @@
     "electron-packager": "^7.0.1",
     "electron-prebuilt": "^0.37.0"
   },
-  "dependencies": {}
+  "dependencies": {
+  }
 }

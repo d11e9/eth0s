@@ -12,7 +12,8 @@
   "eth": {
     "rpc" : [
         "https://eth.turkd.net",
-        "https://testrpc.metamask.io"
+        "https://testrpc.metamask.io",
+        "https://morden.infura.io"
     ]
   },
   "ipfs": {

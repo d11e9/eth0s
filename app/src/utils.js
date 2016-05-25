@@ -16,7 +16,11 @@ module.exports = {
 			dir = path.join( process.env['HOME'], '/.ethereum', append )
 		}
 
-		mkdirp.sync(dir)
+		try {
+			mkdirp.sync(dir)
+		} catch(e){
+			if (e.code !== 'EEXIST') console.error(e)
+		}
 
 		return dir
 	}

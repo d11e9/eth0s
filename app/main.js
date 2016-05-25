@@ -1,7 +1,5 @@
 'use strict';
 
-console.log("START")
-
 const platform = require('os').platform()
 const request = require('request')
 const http = require('http');
@@ -50,7 +48,8 @@ function init (){
 
   let providerEngine = new ProviderEngine({
     verbose: true,
-    rpc: config.active.eth.rpc
+    rpc: config.active.eth.rpc,
+    connected: (host) => config.active.eth.rpc = host
   })
 
   let ethRpcProxy = new EthRPCProxy({

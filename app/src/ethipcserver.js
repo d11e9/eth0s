@@ -14,7 +14,9 @@ function EthIPCServer (options) {
     fs.unlinkSync(options.socketPath);
   } catch (e) {
     // Error: ENOENT no existing socket to unlink.
-    if (e.code !== 'ENOENT') {
+    if (e.code == 'ENOENT') {
+
+    } else {
       console.error( e )
     }
   }
@@ -26,7 +28,11 @@ function EthIPCServer (options) {
     
     socket.on('data', function (data){
       self.handleRequest( data.toString('utf8'), function(err, result){
-        socket.write(result)
+        try{
+          socket.write(result)
+        } catch(e) {
+          console.error(e)
+        }
       })
     })
   });
@@ -93,7 +99,7 @@ function EthIPCServer (options) {
 
   if (options.verbose) console.log( "Creating Eth IPC Server at socket:", options.socketPath)
   this.server.listen( options.socketPath, function(){
-    if (options.verbose) console.log( "Eth IPC Server listening on socket:", options.socketPath)
+    if (options.verbose) console.log( "Eth IPC Server listening on socket:", options.socketPath, arguments)
   });
 
 }

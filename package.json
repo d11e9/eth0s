@@ -1,13 +1,14 @@
 {
-  "name": "eth0s",
-  "version": "0.0.6",
-  "description": "An Ethereum Zero Client",
-  "main": "main.js",
+  "name": "eth0s-build-env",
+  "version": "0.0.1",
+  "description": "Package for building Eth0s",
   "scripts": {
-    "start": "electron main.js",
-    "package-osx": "electron-packager ./ Eth0s --platform=darwin --arch=x64 --out ./dist --overwrite --icon=src/client/images/icon.icns",
-    "package-win": "electron-packager ./ Eth0s --platform=win32 --arch=x64 --out ./dist --overwrite --icon=src/client/images/icon.icns",
-    "package": "electron-packager ./ Eth0s --all --out ./dist --overwrite --icon=src/client/images/icon.icns"
+    "postinstall": "cd app && npm install",
+    "start": "electron ./app",
+    "package-osx": "electron-packager ./app Eth0s --platform=darwin --arch=x64 --out ./dist --overwrite --icon=app/src/client/images/icon.icns",
+    "package-win": "electron-packager ./app Eth0s --platform=win32 --arch=x64 --out ./dist --tmpdir ./tmp --overwrite",
+    "package": "electron-packager ./app Eth0s --all --out ./dist --overwrite --icon=app/src/client/images/icon.icns",
+    "prepackage-win": "node prepackage-win.js"
   },
   "repository": {
     "type": "git",
@@ -27,15 +28,8 @@
   "homepage": "https://github.com/d11e9/eth0s#readme",
   "devDependencies": {
     "electron-packager": "^7.0.1",
-    "electron-prebuilt": "^0.37.0",
-    "electron-rebuild": "^1.1.3"
+    "electron-prebuilt": "^0.37.0"
   },
   "dependencies": {
-    "ipfs-js": "0.0.9",
-    "jquery": "^2.2.3",
-    "querystring": "^0.2.0",
-    "request": "^2.72.0",
-    "web3": "^0.15.3",
-    "web3-provider-engine": "^7.6.2"
   }
 }

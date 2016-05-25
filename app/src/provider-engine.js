@@ -4,6 +4,7 @@ const dialog = electron.dialog
 // Eth and web3 modules
 const Web3 = require('web3')
 
+const lightwallet = require('eth-lightwallet')
 
 const ProviderEngine = require('web3-provider-engine')
 const createPayload = require('web3-provider-engine/util/create-payload.js')
@@ -43,6 +44,7 @@ function Web3ProviderEngine(options){
 
   // Hooked wallet
   this.engine.addProvider(new HookedWalletSubprovider({
+    transaction_signer: lightwallet.keystore,
     getAccounts: function(cb){
       console.log('getAccounts')
       cb( null, ['0x7906edf7472852066e5101e8638f25c4da023fc2', '0xea674fdde714fd979de3edf0f56aa9716b898ec8'])

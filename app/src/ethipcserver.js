@@ -2,6 +2,7 @@ const net = require('net')
 const request = require('request')
 const fs = require('fs')
 const path = require('path')
+const web3 = require('web3')
 
 const createPayload = require('web3-provider-engine/util/create-payload.js')
 
@@ -40,40 +41,24 @@ function EthIPCServer (options) {
   this.handleRequest = function(request, callback){
     
     if (options.verbose) console.log("IPC Request: ", request )
-    let parsed_request
-    let payload
+
     try {
-      if (request.indexOf('}{') >= 0 || request.indexOf(']{') >= 0|| request.indexOf('}[') >= 0) {
-        // wtf requests can come in some pretty funky formats
-        // ideal: {"json":"object"}
-        // actual:
-        //   [{"json":"objectA"}{...}]
-        //   {"json":"objectB"}{...}
-        //   [{"json":"objectC"}]{...}
-        //   [{...}{...}]{...}
-        var delimitted1 = request.replace('}{', '},{')
-        var delimitted2 = delimitted1.replace('}[', '},[')
-        var delimitted3 = delimitted2.replace(']{', '],{')
-        request = "[" + delimitted2 + "]"
-      }
-      parsed_request = JSON.parse( request )
-      if (typeof parsed_request.length === 'undefined') {
-        parsed_request = [parsed_request]
-      }
-      
-    } catch(err) {
+      requests = web3.providers.IpcProvider.prototype._parseResponse(request);
+    } catch(err){
       console.error("Error parsing request (err, request)")
       console.error(err, request)
       return;
     }
 
+    
 
-    for (var r=0; r < parsed_request.length; r++) {
+
+    for (var r=0; r < requests.length; r++) {
       try {
-        payload = createPayload( parsed_request[r] )
+        payload = createPayload( requests[r] )
       } catch (err) {
-        console.error("Error creating payload from parsed request (err, parsed_request)")
-        console.error(err, parsed_request[r])
+        console.error("Error creating payload from parsed request (err, requests)")
+        console.error(err, requests[r])
       }
       
       if (options.verbose) console.log("Payload: ", payload )
@@ -83,7 +68,7 @@ function EthIPCServer (options) {
           request.error = err;
           callback(err, request)
         } else {
-          if (options.verbose) console.log("Sending response: ", response, parsed_request)
+          if (options.verbose) console.log("Sending response: ", response, requests)
           callback( null,  JSON.stringify(response));
         }
       });  
